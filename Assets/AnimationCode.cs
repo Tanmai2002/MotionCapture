@@ -9,20 +9,47 @@ public class AnimationCode : MonoBehaviour
 
     public GameObject[] Body;
 
-    List<string> lines;
+    string tempStr = "";
+    int numToSendToPython = 0;
+    UdpSocket udpSocket;
 
-    int counter = 0;
+    public void QuitApp()
+    {
+        print("Quitting");
+        Application.Quit();
+    }
+
+    public void UpdatePythonRcvdText(string str)
+    {
+        tempStr = str;
+    }
+
+    public void SendToPython()
+    {
+        udpSocket.SendData("Sent From Unity: " + numToSendToPython.ToString());
+        numToSendToPython++;
+        // sendToPythonText.text = "Send Number: " + numToSendToPython.ToString();
+    }
+
 
     // Start is called before the first frame update
     void Start()
     {
-        lines = System.IO.File.ReadLines("Assets/AnimationFile.txt").ToList();
+        // lines = System.IO.File.ReadLines("Assets/AnimationFile.txt").ToList();
+        udpSocket = FindObjectOfType<UdpSocket>();
     }
 
     // Update is called once per frame
     void Update()
     {
-        string[] points = lines[counter].Split(',');
+        
+        Debug.Log(tempStr);
+        string[] points = new string[120];
+        if(tempStr.Length > 0){
+            points = tempStr.Split(',');
+            Debug.Log(points.Length);
+        }
+        
 
         for(int i = 0; i < 33; i++)
         {
@@ -32,13 +59,7 @@ public class AnimationCode : MonoBehaviour
 
             Body[i].transform.position = new Vector3(x, y, z);
         }
-
-        counter++;
-
-        if(counter >= lines.Count)
-        {
-            counter = 0;
-        }
-        Thread.Sleep(30);
+        
+        Thread.Sleep(2);
     }
 }
