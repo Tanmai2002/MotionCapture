@@ -1,7 +1,12 @@
 import cv2
 from cvzone.PoseModule import PoseDetector
 
-cap = cv2.VideoCapture("dance_video.mp4")
+import UdpComms as U
+
+# Create UDP socket to use for sending (and receiving)
+sock = U.UdpComms(udpIP="127.0.0.1", portTX=8000, portRX=8001, enableRX=True, suppressWarnings=True)
+
+cap = cv2.VideoCapture(0)
 
 detector = PoseDetector()
 posList = []
@@ -16,7 +21,8 @@ while True:
         for lm in lmList:
             lmString += f'{lm[1]},{img.shape[0]-lm[2]},{lm[3]},'
 
-        posList.append(lmString)    
+        posList.append(lmString)  
+        sock.SendData(lmString)  
 
     print(len(posList))
 
