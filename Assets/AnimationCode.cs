@@ -11,6 +11,8 @@ public class AnimationCode : MonoBehaviour
 
     string tempStr = "";
     int numToSendToPython = 0;
+    [SerializeField]
+    Animator animator;
     UdpSocket udpSocket;
 
     public void QuitApp()
@@ -43,11 +45,14 @@ public class AnimationCode : MonoBehaviour
     void Update()
     {
         
+        Debug.Log("Id is");
+        Transform t=animator.GetBoneTransform(HumanBodyBones.Head);
         Debug.Log(tempStr);
+        
         string[] points = new string[120];
         if(tempStr.Length > 0){
             points = tempStr.Split(',');
-            Debug.Log(points.Length);
+            // Debug.Log(points.Length);
         }
         
 
@@ -58,7 +63,15 @@ public class AnimationCode : MonoBehaviour
             float z = float.Parse(points[2 + i*3])/100;
 
             Body[i].transform.position = new Vector3(x, y, z);
+            t.position=new Vector3(x, y, z);
+            if(i==1){
+                
+            animator.rootPosition=new Vector3(x,y,z);
+            }
+            
         }
+
+
         
         Thread.Sleep(2);
     }
